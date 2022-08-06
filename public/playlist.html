@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=1500,initial-scale=1.0" />
+    <!-- Primary Meta Tags -->
+    <title>Diabotical Stats</title>
+    <meta name="title" content="Diabotical Stats" />
+    <meta name="description" content="Diabotical Stats" />
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
+    <script src="https://apis.google.com/js/api.js"></script>
+    <style>
+      html {
+        background-color: #000;
+        color: #fff;
+        font-family: 'Open Sans', sans-serif;
+        font-size: 1.3em;
+        line-height: 1 !important;
+      }
+    </style>
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+  </head>
+  <body class="w-full min-h-screen overflow-x-hidden whitespace-nowrap">
+    <div id="app" class="flex flex-col items-center min-h-screen p-2 text-center whitespace-no-wrap bg-gradient-to-br from-gray-800 to-gray-900">
+      <header class="relative p-10">
+        <h1 class="relative font-extrabold text-7xl">Diabotical Race<br /><span class="text-4xl">Youtube Playlist generator</span></h1>
+      </header>
+
+      <main>
+        <form class="flex space-x-6">
+          <button type="submit" class="px-4 py-2 rounded font-bold bg-gradient-to-br from-blue-600 to-blue-900 hover:from-blue-500" @click.prevent="authenticate()">Generate</button>
+          <!-- <button type="submit" class="px-4 py-2 rounded font-bold bg-gradient-to-br from-green-600 to-green-900 hover:from-green-500" @click.prevent="generate()">Generate</button> -->
+        </form>
+      </main>
+
+      <footer class="relative p-2 mt-4 space-y-1 text-xs text-gray-500">
+        <div>
+          Powered by
+          <a href="https://developers.google.com/youtube" target="_blank" class="hover:text-gray-300">Youtube API</a>
+        </div>
+        <div>
+          &copy;
+          <a class="hover:text-gray-300" href="https://twitter.com/quakelife" target="_blank">Danmer</a>, 2021
+        </div>
+      </footer>
+    </div>
+
+    <script src="https://unpkg.com/vue@next/dist/vue.global.prod.js"></script>
+    <script src="https://apis.google.com/js/api.js"></script>
+    <script>
+      const apiKey = 'AIzaSyBEUmIFaKyK8GhVrWNXokhHSuxvEths_DE'
+      const clientId = '888407906163-jrc7ss00erc5n78jno6mdqqnihcq8tna.apps.googleusercontent.com'
+      const playlistId = 'PLuji2V2SFYVI51lkv1qlU91SX_Pm43jv6'
+      const playlistTitle = 'Diabotical Time Trials - World Records'
+      const playlistDescription = 'Best runs from https://quakelife.ru/diabotical/race/'
+      const delay = 100
+
+      function authenticate() {
+        return gapi.auth2
+          .getAuthInstance()
+          .signIn({
+            scope: 'https://www.googleapis.com/auth/youtube.force-ssl',
+          })
+          .then(
+            function () {
+              console.log('Sign-in successful')
+              generate()
+            },
+            function (err) {
+              console.error('Error signing in', err)
+            }
+          )
+      }
+
+      function loadClient() {
+        gapi.client.setApiKey(apiKey)
+        return gapi.client.load('https://www.googleapis.com/discovery/v1/apis/youtube/v3/rest').then(
+          function () {
+            console.log('GAPI client loaded for API')
+          },
+          function (err) {
+            console.error('Error loading GAPI client for API', err)
+          }
+        )
+      }
+
+      // Make sure the client is loaded and sign-in is complete before calling this method.
+      async function generate() {
+        const records = await getRecords()
+        const items = await getPlaylistItems(playlistId)
+        let changes = 0
+
+        // records.length = 3;
+
+        const recordsByVideo = new Map()
+        for (const record of records) {
+          recordsByVideo.set(getVideoId(record.video), record)
+        }
+
+        const itemsByVideo = new Map()
+        for (const item of items) {
+          itemsByVideo.set(item.snippet.resourceId.videoId, item)
+        }
+
+        for (const [newVideoId, record] of recordsByVideo) {
+          if (itemsByVideo.has(newVideoId)) {
+            console.log('skip new video', newVideoId)
+          } else {
+            changes++
+            console.log('insert', newVideoId, record.datetime)
+            await insertPlaylistItem(newVideoId)
+            await timeout()
+          }
+        }
+
+        for (const [oldVideoId, item] of itemsByVideo) {
+          if (recordsByVideo.has(oldVideoId)) {
+            // console.log("skip old video", oldVideoId);
+          } else {
+            changes++
+            console.log('delete', item.id)
+            await deletePlaylistItem(item.id)
+            await timeout()
+          }
+        }
+
+        if (changes) {
+          const date = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'long', day: 'numeric' }).format()
+          gapi.client.youtube.playlists.update({ part: 'snippet', id: playlistId, snippet: { title: playlistTitle, description: playlistDescription + '\n\nLast update: ' + date } }).then(console.log)
+        }
+
+        // console.log({ newVideoIds, oldVideoIds });
+
+        // for (const playlistItem of playlistItems) {
+        //   if (newVideoIds.includes(item.snippet.resourceId.videoId)) {
+        //     // await insertPlaylistItem(item.snippet.resourceId.videoId);
+        //   } else {
+        //     await deletePlaylistItem(item.id);
+        //   }
+        // }
+
+        // for (const item of playlistItems) {
+        //   if (videoIds.includes(item.snippet.resourceId.videoId)) {
+        //     await insertPlaylistItem(item.snippet.resourceId.videoId);
+        //   } else {
+        //     await deletePlaylistItem(item.id);
+        //   }
+        // }
+      }
+
+      gapi.load('client:auth2', function () {
+        gapi.auth2.init({ client_id: clientId })
+        loadClient()
+      })
+
+      const { createApp } = Vue
+      createApp({
+        setup() {
+          return {
+            authenticate,
+            generate,
+          }
+        },
+      }).mount('#app')
+
+      async function getRecords() {
+        return fetch('https://quakelife.ru/diabotical/race/data.json')
+          .then((res) => res.json())
+          .then((data) => {
+            const recordsByGroup = {}
+            const mapsById = {}
+            for (const map of data.maps) {
+              mapsById[map.id] = map
+            }
+            for (const run of data.runs) {
+              const currentRecord = recordsByGroup[run.mapId + '_' + run.physicsId]
+              if (run.version === mapsById[run.mapId].version) {
+                if (!currentRecord || currentRecord.time > run.time) {
+                  recordsByGroup[run.mapId + '_' + run.physicsId] = run
+                }
+              } else {
+                // console.log("skip", run);
+              }
+            }
+            // Not youtube:
+            // console.log(
+            //   Object.values(recordsByGroup)
+            //     .filter((record) => !getVideoId(record.video))
+            //     .map((record) => `${record.mapId} [${record.physicsId}] - ${record.name} - ${record.video}`)
+            // );
+            const records = Object.values(recordsByGroup).filter((record) => getVideoId(record.video))
+            records.sort((run1, run2) => (run1.datetime > run2.datetime ? 1 : -1))
+            return records
+          })
+      }
+
+      async function updatePlaylist(data) {
+        return gapi.client.youtube.playlist.update({ part: ['snippet', 'id'], playlistId, pageToken, maxResults: 50 }).then((respose) => respose.result)
+      }
+
+      async function getPlaylistItems(playlistId, pageToken = '', allItems = []) {
+        const { items, nextPageToken, pageInfo } = await gapi.client.youtube.playlistItems.list({ part: ['snippet', 'id'], playlistId, pageToken, maxResults: 50 }).then((respose) => respose.result)
+        allItems.push(...items)
+        if (allItems.length < pageInfo.totalResults && nextPageToken) {
+          return await getPlaylistItems(playlistId, nextPageToken, allItems)
+        }
+        return allItems
+      }
+
+      async function insertPlaylistItem(videoId) {
+        return gapi.client.youtube.playlistItems
+          .insert({ part: ['snippet'], resource: { snippet: { playlistId, resourceId: { kind: 'youtube#video', videoId } } } })
+          .then((response) => {
+            console.log({ response })
+          })
+          .catch((err) => {
+            console.warn(err)
+          })
+      }
+
+      async function deletePlaylistItem(itemId) {
+        return gapi.client.youtube.playlistItems
+          .delete({ id: itemId })
+          .then((response) => {
+            console.log({ response })
+          })
+          .catch((err) => {
+            console.warn(err)
+          })
+      }
+
+      function getVideoId(url) {
+        const match = url.match(/((youtube\.com\/watch\?v=([^&]+))|(youtu\.be\/([^?]+)))((&|\?)t=(\d+)(.*))?/)
+        return match && (match[3] || match[5])
+      }
+
+      async function timeout(newDelay = delay) {
+        return new Promise((resolve) => setTimeout(resolve, newDelay))
+      }
+    </script>
+
+    <script>
+      if (location.hostname === 'quakelife.ru') {
+        ;(function (b, o, i, l, e, r) {
+          b.GoogleAnalyticsObject = l
+          b[l] ||
+            (b[l] = function () {
+              ;(b[l].q = b[l].q || []).push(arguments)
+            })
+          b[l].l = +new Date()
+          e = o.createElement(i)
+          r = o.getElementsByTagName(i)[0]
+          e.src = '//www.google-analytics.com/analytics.js'
+          r.parentNode.insertBefore(e, r)
+        })(window, document, 'script', 'ga')
+        ga('create', 'UA-17646899-1')
+        ga('send', 'pageview')
+      }
+    </script>
+    <script>
+      if (location.hostname === 'quakelife.ru') {
+        ;(function (m, e, t, r, i, k, a) {
+          m[i] =
+            m[i] ||
+            function () {
+              ;(m[i].a = m[i].a || []).push(arguments)
+            }
+          m[i].l = 1 * new Date()
+          ;(k = e.createElement(t)), (a = e.getElementsByTagName(t)[0]), (k.async = 1), (k.src = r), a.parentNode.insertBefore(k, a)
+        })(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js', 'ym')
+        ym(24177331, 'init', {
+          clickmap: true,
+          trackLinks: true,
+          accurateTrackBounce: true,
+          webvisor: true,
+          trackHash: true,
+        })
+      }
+    </script>
+  </body>
+</html>

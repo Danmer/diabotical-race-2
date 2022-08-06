@@ -1,0 +1,202 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  background-color: hsl(220deg 20% 20%);
+  @apply text-gray-100;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 0.9em;
+  line-height: 1;
+}
+
+input,
+textarea {
+  background-color: transparent;
+  color: inherit;
+}
+input:focus,
+textarea:focus {
+  outline: none;
+}
+
+.text-2xs {
+  font-size: 0.7rem;
+}
+
+.text-2xs,
+.text-xs,
+.text-sm,
+.text-base,
+.text-lg,
+.text-xl,
+.text-2xl {
+  line-height: inherit;
+}
+
+::-webkit-scrollbar {
+  background-color: hsl(220deg 25% 18%);
+  /* background-color: #232c3b; */
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: hsl(220deg 25% 14%);
+  /* background-color: #192230; */
+  min-height: 2rem;
+  border-radius: 3px;
+}
+
+/* Firefox scrollbars */
+.overflow-y-auto,
+.overflow-y-scroll {
+  scrollbar-color: hsl(220deg 25% 14%) hsl(220deg 25% 18%);
+  scrollbar-width: thin;
+}
+
+/* Overlayed scrollbar
+.overflow-y-scroll {
+  overflow: overlay;
+}
+
+.overflow-y-scroll::-webkit-scrollbar {
+  background-color: transparent;
+  width: 0.4rem;
+}
+.overflow-y-scroll:hover::-webkit-scrollbar-thumb {
+  @apply bg-gray-900 bg-opacity-50 rounded-full transition-all;
+  min-height: 2rem;
+}
+*/
+
+.shadow {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+.shadow-top {
+  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);
+}
+.text-shadow {
+  text-shadow: 0px 1px 1px #012;
+}
+.thumbnail-shadows {
+  background-image: radial-gradient(transparent, rgba(0, 0, 0, 0.5));
+}
+
+.row-group + .row-group.collapsed {
+  /*transition: background-color 0.5s;*/
+  background-color: #374151;
+}
+.row-group + .row-group.collapsed:nth-child(even) {
+  background-color: #313a4b;
+}
+.row-group:not(.collapsed) .sticky {
+  background-color: #374151;
+}
+
+.row {
+  /*transition: background-color 0.5s;*/
+  background-color: #374151;
+}
+.row:nth-child(odd) {
+  background-color: #313a4b;
+}
+.row:hover {
+  background-color: #475569 !important; /* hsl(150deg 30% 25%) !important; */
+  transition: none;
+}
+/* div.row:hover {
+  background-color: hsl(220deg 50% 24%) !important;
+} */
+
+.row.active {
+  background-color: hsl(220deg 60% 30%) !important;
+  transition: background-color 0.5s;
+  opacity: 1;
+}
+.row.active:nth-child(odd) {
+  background-color: hsl(220deg 60% 27%) !important;
+}
+.row.active:hover {
+  background-color: hsl(220deg 60% 35%) !important;
+  transition: none;
+}
+
+.row.mine {
+  background-color: hsl(140deg 40% 26%) !important;
+  transition: background-color 0.5s;
+  opacity: 1;
+}
+.row.mine:nth-child(odd) {
+  background-color: hsl(140deg 40% 23%) !important;
+}
+.row.mine:hover {
+  background-color: hsl(140deg 40% 31%) !important;
+  transition: none;
+}
+
+.row.obsolete {
+  background-color: hsl(0deg 30% 30%) !important;
+  transition: background-color 0.5s;
+}
+.row.obsolete:nth-child(odd) {
+  background-color: hsl(0deg 30% 27%) !important;
+}
+
+.plus:before {
+  content: '+';
+}
+
+.slide-enter-from,
+.slide-leave-to {
+  height: 0;
+}
+
+.dropdown-enter-from,
+.dropdown-leave-to {
+  transform: translate(0, -100%);
+  opacity: 0;
+}
+
+.zoom-enter-from,
+.zoom-leave-to {
+  transform: scale(0.5);
+  opacity: 0;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.tag.cursor-pointer:hover {
+  filter: brightness(1.1);
+}
+
+.fa.red {
+  @apply text-red-500;
+}
+.fa.green {
+  @apply text-green-500;
+}
+.fa.blue {
+  @apply text-blue-400;
+}
+.fa.orange {
+  @apply text-yellow-600;
+}
+.fa.yellow {
+  @apply text-yellow-300;
+}
+
+.animated > * {
+  transition: transform 0.5s;
+}
+
+.animated-enter-from,
+.animated-leave-to {
+  opacity: 0;
+}
+.animated-leave-active {
+  position: absolute;
+  top: 100%;
+}

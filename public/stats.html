@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Primary Meta Tags -->
+    <title>Diabotical Race - Leaderboard Stats</title>
+    <meta name="title" content="Diabotical Race - Leaderboard Stats" />
+    <meta name="description" content="Diabotical Race - Leaderboard Stats" />
+    <link rel="icon" type="image/png" href="favicon.png" />
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://quakelife.ru/diabotical/race/stats.html" />
+    <meta property="og:title" content="Diabotical Race - Leaderboard Stats" />
+    <meta property="og:description" content="Diabotical Race - Leaderboard Stats" />
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://quakelife.ru/diabotical/race/stats.html" />
+    <meta property="twitter:title" content="Diabotical Race - Leaderboard Stats" />
+    <meta property="twitter:description" content="Diabotical Race - Leaderboard Stats" />
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.35.0/apexcharts.min.css" />
+    <link rel="stylesheet" href="flags.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.2.33/vue.global.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/apexcharts/3.35.0/apexcharts.min.js"></script>
+    <style>
+      html {
+        font-family: 'Open Sans', sans-serif;
+        background-color: #374151;
+        color: #eee;
+        line-height: 1em;
+      }
+      body {
+        margin: 0;
+      }
+      h1 {
+        margin: 0;
+        padding: 3rem;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: #ee6;
+        text-align: center;
+      }
+      h2 {
+        margin: 0;
+        padding: 2rem;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: #ee6;
+        text-align: center;
+      }
+      section.flex,
+      section.flex > div.flex {
+        justify-content: center;
+      }
+      table {
+        border-collapse: collapse;
+      }
+      caption {
+        padding-bottom: 0.5em;
+        /* border-bottom: 1px solid #999; */
+        text-align: left;
+        font-weight: bold;
+      }
+      tr {
+        border-top: 1px solid #456;
+      }
+      /* tr:nth-child(even) {
+        background-color: rgba(255, 255, 255, 0.03);
+      }
+      tr:nth-child(odd) {
+        background-color: rgba(0, 0, 0, 0.07);
+      } */
+      td {
+        padding: 0.5em 0.5em;
+        vertical-align: middle;
+      }
+      td:first-child {
+        text-align: right;
+      }
+      td:nth-child(2) {
+        padding-right: 2em;
+      }
+      td:nth-child(3) {
+        text-align: right;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      a:hover {
+        color: #f96;
+      }
+      .m-8 {
+        margin: 2rem;
+      }
+      .truncate {
+        margin: -0.1em 0;
+        padding: 0.1em 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .flex {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .flag {
+        border-radius: 0.1em;
+      }
+      .thumbnail {
+        margin: -0.2em 0;
+        height: 1.4em;
+        border-radius: 0.1em;
+      }
+      .flag + div,
+      .thumbnail + div,
+      .fa + div {
+        margin-left: 0.3em;
+      }
+      .count {
+        font-size: 2em;
+        line-height: normal;
+      }
+      .map-name,
+      .player-name {
+        margin-left: 0.3em;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <h1><a href="https://quakelife.ru/diabotical/race/" target="_blank">Diabotical Race Leaderboard</a> Stats</h1>
+      <section class="flex" style="text-align: center; font-size: 1.3em; font-weight: bold">
+        <div class="flex">
+          <div class="m-8">
+            <div>Days</div>
+            <div class="count">{{daysById.size}}</div>
+          </div>
+          <div class="m-8">
+            <div>Submissions</div>
+            <div class="count">{{runsById.size}}</div>
+          </div>
+          <div class="m-8">
+            <div>Players</div>
+            <div class="count">{{playersById.size}}</div>
+          </div>
+        </div>
+        <div class="flex">
+          <div class="m-8">
+            <div>Maps</div>
+            <div class="count">{{mapsById.size}}</div>
+          </div>
+          <div class="m-8">
+            <div>Mappers</div>
+            <div class="count">{{authorsById.size}}</div>
+          </div>
+          <div class="m-8">
+            <div>Tags</div>
+            <div class="count">{{tagsById.size}}</div>
+          </div>
+        </div>
+        <div class="flex">
+          <div class="m-8">
+            <div>EggCups</div>
+            <div class="count">{{global.eggcups}}</div>
+          </div>
+          <div class="m-8">
+            <div>Ramp bugs</div>
+            <div class="count">{{global.rampbugs}}</div>
+          </div>
+          <div class="m-8">
+            <div>Time</div>
+            <div class="count">{{getPrettyTime(global.time, false)}}</div>
+          </div>
+        </div>
+      </section>
+
+      <h2>Players</h2>
+      <section class="flex">
+        <div class="flex">
+          <table class="m-8">
+            <caption>
+              Submissions
+            </caption>
+            <tbody>
+              <tr v-for="(player, index) in playersSortedByRuns">
+                <td>{{index+1}}.</td>
+                <td><v-player :player="player"></v-player></td>
+                <td>{{player.runs.size}}</td>
+              </tr>
+            </tbody>
+          </table>
+          <table class="m-8">
+            <caption>
+              World records
+            </caption>
+            <tbody>
+              <tr v-for="(player, index) in playersSortedByWorldRecords">
+                <td>{{index+1}}.</td>
+                <td><v-player :player="player"></v-player></td>
+                <td>{{player.wrs}}</td>
+              </tr>
+            </tbody>
+          </table>
+          <table class="m-8">
+            <caption>
+              Total time
+            </caption>
+            <tbody>
+              <tr v-for="(player, index) in playersSortedByTime">
+                <td>{{index+1}}.</td>
+                <td><v-player :player="player"></v-player></td>
+                <td>{{getPrettyTime(player.time, false)}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="flex">
+          <table class="m-8">
+            <caption>
+              Played maps
+            </caption>
+            <tbody>
+              <tr v-for="(player, index) in playersSortedByMaps">
+                <td>{{index+1}}.</td>
+                <td><v-player :player="player"></v-player></td>
+                <td>{{player.maps.size}}</td>
+              </tr>
+            </tbody>
+          </table>
+          <table class="m-8">
+            <caption>
+              Countries
+            </caption>
+            <tbody>
+              <tr v-for="(item, index) in playersSortedByFlags">
+                <td>{{index+1}}.</td>
+                <td>
+                  <div class="flex">
+                    <v-flag :flag="item.flag"></v-flag>
+                    <div>{{item.flag}}</div>
+                  </div>
+                </td>
+                <td>{{item.count}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <h2>Maps</h2>
+      <section class="flex">
+        <div class="flex">
+          <table class="m-8">
+            <caption>
+              Submissions
+            </caption>
+            <tbody>
+              <tr v-for="(map, index) in mapsSortedByRuns">
+                <td>{{index+1}}.</td>
+                <td><v-map :map="map"></v-map></td>
+                <td>{{map.runs.size}}</td>
+              </tr>
+            </tbody>
+          </table>
+          <table class="m-8">
+            <caption>
+              Total time
+            </caption>
+            <tbody>
+              <tr v-for="(map, index) in mapsSortedByTime">
+                <td>{{index+1}}.</td>
+                <td><v-map :map="map"></v-map></td>
+                <td>{{getPrettyTime(map.time, false)}}</td>
+              </tr>
+            </tbody>
+          </table>
+          <table class="m-8">
+            <caption>
+              Players
+            </caption>
+            <tbody>
+              <tr v-for="(map, index) in mapsSortedByPlayers">
+                <td>{{index+1}}.</td>
+                <td><v-map :map="map"></v-map></td>
+                <td>{{map.players.size}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="flex">
+          <table class="m-8">
+            <caption>
+              Tags
+            </caption>
+            <tbody>
+              <tr v-for="(tag, index) in tagsSortedByMaps">
+                <td>{{index+1}}.</td>
+                <td><i class="fa fa-fw" :class="`fa-${tag.icon}`" :style="{color: tag.color}"></i>&nbsp;{{tag.name}}</td>
+                <td>{{tag.maps.size}}</td>
+              </tr>
+            </tbody>
+          </table>
+          <table class="m-8">
+            <caption>
+              Mappers
+            </caption>
+            <tbody>
+              <tr v-for="(author, index) in authorsSortedByMaps">
+                <td>{{index+1}}.</td>
+                <td><i class="fa fa-user" style="color: #666"></i>&nbsp;{{author.name}}</td>
+                <td>{{author.maps.size}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <h2>Runs</h2>
+      <section class="flex">
+        <div class="flex">
+          <table class="m-8">
+            <caption>
+              Shortest times
+            </caption>
+            <tbody>
+              <tr v-for="(run, index) in shortestRuns">
+                <td>{{index+1}}.</td>
+                <td>
+                  <div class="flex"><v-thumbnail :map-id="run.mapId"></v-thumbnail><v-player :player="run.player"></v-player></div>
+                </td>
+                <td>{{getPrettyTime(run.time)}}</td>
+              </tr>
+            </tbody>
+          </table>
+          <table class="m-8">
+            <caption>
+              Longest times
+            </caption>
+            <tbody>
+              <tr v-for="(run, index) in longestRuns">
+                <td>{{index+1}}.</td>
+                <td>
+                  <div class="flex"><v-thumbnail :map-id="run.mapId"></v-thumbnail><v-player :player="run.player"></v-player></div>
+                </td>
+                <td>{{getPrettyTime(run.time)}}</td>
+              </tr>
+            </tbody>
+          </table>
+          <table class="m-8">
+            <caption>
+              Prettiest times
+            </caption>
+            <tbody>
+              <tr v-for="(run, index) in prettiestRuns">
+                <td>{{index+1}}.</td>
+                <td>
+                  <div class="flex"><v-thumbnail :map-id="run.mapId"></v-thumbnail><v-player :player="run.player"></v-player></div>
+                </td>
+                <td>{{getPrettyTime(run.time)}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="flex">
+          <table class="m-8">
+            <caption>
+              Submissions
+            </caption>
+            <tbody>
+              <tr v-for="(item, index) in runsSortedByFlags">
+                <td>{{index+1}}.</td>
+                <td>
+                  <div class="flex">
+                    <v-flag :flag="item.flag"></v-flag>
+                    <div>{{item.flag}}</div>
+                  </div>
+                </td>
+                <td>{{item.count}}</td>
+              </tr>
+            </tbody>
+          </table>
+          <table class="m-8">
+            <caption>
+              World records
+            </caption>
+            <tbody>
+              <tr v-for="(item, index) in recordsSortedByFlags">
+                <td>{{index+1}}.</td>
+                <td>
+                  <div class="flex">
+                    <v-flag :flag="item.flag"></v-flag>
+                    <div>{{item.flag}}</div>
+                  </div>
+                </td>
+                <td>{{item.count}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <h2>Months</h2>
+      <section class="flex">
+        <div id="maps-difficulties-months-chart" class="m-8" style="flex: 1; min-width: 400px"></div>
+        <div id="maps-difficulties-total-chart" class="m-8" style="min-width: 400px"></div>
+      </section>
+      <section class="flex">
+        <div id="maps-physics-months-chart" class="m-8" style="flex: 1; min-width: 400px"></div>
+        <div id="maps-physics-total-chart" class="m-8" style="min-width: 400px"></div>
+      </section>
+      <section class="flex">
+        <div id="players-difficulties-months-chart" class="m-8" style="flex: 1; min-width: 400px"></div>
+        <div id="players-difficulties-total-chart" class="m-8" style="min-width: 400px"></div>
+      </section>
+      <section class="flex">
+        <div id="players-physics-months-chart" class="m-8" style="flex: 1; min-width: 400px"></div>
+        <div id="players-physics-total-chart" class="m-8" style="min-width: 400px"></div>
+      </section>
+      <section class="flex">
+        <div id="runs-difficulties-months-chart" class="m-8" style="flex: 1; min-width: 400px"></div>
+        <div id="runs-difficulties-total-chart" class="m-8" style="min-width: 400px"></div>
+      </section>
+      <section class="flex">
+        <div id="runs-physics-months-chart" class="m-8" style="flex: 1; min-width: 400px"></div>
+        <div id="runs-physics-total-chart" class="m-8" style="min-width: 400px"></div>
+      </section>
+      <section class="flex">
+        <div id="runs-links-months-chart" class="m-8" style="flex: 1; min-width: 400px"></div>
+        <div id="runs-links-total-chart" class="m-8" style="min-width: 400px"></div>
+      </section>
+      <section class="flex">
+        <div id="runs-records-months-chart" class="m-8" style="flex: 1; min-width: 400px"></div>
+        <div id="runs-records-total-chart" class="m-8" style="min-width: 400px"></div>
+      </section>
+    </div>
+
+    <footer class="m-8" style="text-align: center; opacity: 0.5">
+      <small>© <a href="https://twitter.com/quakelife" target="_blank">Danmer</a>, 2022</small>
+    </footer>
+
+    <script>
+      const { createApp, ref, computed, reactive, nextTick, h } = Vue
+
+      const VFlag = {
+        props: {
+          flag: {
+            type: String,
+            required: true,
+          },
+        },
+        render() {
+          return h('div', { class: `flag flag-${this.$props.flag}` })
+        },
+      }
+
+      const VThumbnail = {
+        props: {
+          mapId: {
+            type: String,
+            required: true,
+          },
+        },
+        render() {
+          return h('img', { class: 'thumbnail', src: `https://quakelife.ru/diabotical/maps/img/thumbnails-sm/${this.$props.mapId}.webp`, title: this.$props.mapId })
+        },
+      }
+
+      const VPlayer = {
+        props: {
+          player: {
+            type: Object,
+            required: true,
+          },
+        },
+        render() {
+          return h('div', { class: 'flex' }, [h(VFlag, { flag: this.$props.player.flag }), h('div', { class: 'truncate' }, this.$props.player.name)])
+        },
+      }
+
+      const VMap = {
+        props: {
+          map: {
+            type: Object,
+            required: true,
+          },
+        },
+        render() {
+          return h('div', { class: 'flex' }, [h(VThumbnail, { mapId: this.$props.map.id, title: this.$props.map.id }), h('div', { class: 'truncate' }, this.$props.map.name)])
+        },
+      }
+
+      const App = {
+        components: { VFlag, VThumbnail, VPlayer, VMap },
+        setup() {
+          const params = new URL(document.location).searchParams
+
+          const physicsIds = ['race', 'vintage', 'diabotical']
+          const tagsDataById = {
+            // difficulty
+            easy: { group: 2, icon: 'grin-beam', color: '#393', custom: false, auto: true },
+            normal: { group: 2, icon: 'grimace', color: '#c63', custom: false, auto: true },
+            hard: { group: 2, icon: 'dizzy', color: '#933', custom: false, auto: true },
+            // physics
+            diabotical: { group: 3, icon: 'frog', color: '#696', custom: false, auto: true },
+            vintage: { group: 3, icon: 'fish', color: '#68a', custom: false, auto: true },
+            race: { group: 3, icon: 'crow', color: '#966', custom: false, auto: true },
+            // author
+            official: { group: 6, icon: 'check-circle', color: '#090', custom: false },
+            community: { group: 6, icon: 'users', color: '#09c', custom: false, auto: true },
+            archived: { group: 7, icon: 'archive', color: '#987', custom: false, auto: true },
+            // esports
+            league: { group: 8, icon: 'trophy', color: '#c90', custom: false },
+            eggcup: { group: 8, icon: 'trophy', color: '#c90', custom: false },
+            // special
+            new: { group: 9, icon: 'calendar-plus', color: '#09c', custom: false, auto: true },
+            // tags
+            grenade: { group: 5, icon: 'bomb', color: '#c60' },
+            blaster: { group: 5, icon: 'sun', color: '#93c' },
+            rocket: { group: 5, icon: 'rocket', color: '#c00' },
+            climb: { group: 5, icon: 'mountain', color: '#970' },
+            slide: { group: 5, icon: 'skating', color: 'hsl(180deg 50% 50%)' }, // /* 'sleigh' */
+            strafe: { group: 5, icon: 'running', color: '#090' },
+            ctf: { group: 5, icon: 'flag', color: '#09c' },
+            torture: { group: 5, icon: 'fist-raised', color: '#f90' },
+            gr: { group: 5, icon: 'coins', color: '#c60' },
+            coins: { group: 5, icon: 'coins', color: '#fc0' },
+            'explosion weeball': { group: 5, icon: 'expand-arrows-alt', color: '#c00' },
+            'implosion weeball': { group: 5, icon: 'compress-arrows-alt', color: '#c0c' },
+          }
+
+          const monthsById = reactive(new Map())
+          const daysById = reactive(new Map())
+          const runsById = reactive(new Map())
+          const mapsById = reactive(new Map())
+          const playersById = reactive(new Map())
+          const authorsById = reactive(new Map())
+          const tagsById = reactive(new Map())
+          const physicsById = reactive(new Map())
+          const iconsById = reactive(new Map())
+
+          const recordsByGroups = reactive(new Map())
+
+          const months = computed(() => [...monthsById.values()].sort((m1, m2) => (m1.id > m2.id ? 1 : -1)))
+          const days = computed(() => [...daysById.values()].sort((d1, d2) => (d1.id > d2.id ? 1 : -1)))
+          const runs = computed(() => [...runsById.values()])
+          const maps = computed(() => [...mapsById.values()])
+          const players = computed(() => [...playersById.values()])
+          const authors = computed(() => [...authorsById.values()])
+          const tags = computed(() => [...tagsById.values()])
+          const icons = computed(() => [...iconsById.entries()].map((entry) => entry.join(':')))
+
+          const physicsColors = ['#f63', '#36f', '#3c3']
+          const physicsNames = ['Race', 'Vintage', 'Diabotical']
+          const difficultiesColors = ['#3c3', '#ff3', '#f63']
+          const difficultiesNames = ['Easy', 'Normal', 'Hard']
+          const linkColors = ['#f63', '#36f', '#a6f', '#ff3']
+          const linkNames = ['Youtube', 'Streamable', 'Twitch', 'Other']
+          const recordsColors = ['#3c3', '#36f']
+          const recordsNames = ['PB', 'WR']
+
+          const height = 300
+          const background = 'transparent'
+          const theme = { mode: 'dark' }
+          const stroke = { width: 0 }
+
+          const chartMonthsOptions = computed(() => {
+            return {
+              theme,
+              stroke,
+              xaxis: {
+                type: 'datetime',
+                categories: months.value.map((month) => month.id),
+                tooltip: {
+                  enabled: false,
+                },
+              },
+              dataLabels: {
+                enabled: true,
+                enabledOnSeries: [0],
+                // style: {
+                //   colors: ['#000'],
+                // },
+                // offsetY: -10,
+              },
+              tooltip: {
+                x: {
+                  format: 'MMM yyyy',
+                },
+              },
+              legend: {
+                position: 'top',
+                floating: true,
+                offsetY: -10,
+              },
+            }
+          })
+
+          const chartTotalOptions = computed(() => {
+            return {
+              theme,
+              stroke,
+              tooltip: { enabled: false },
+            }
+          })
+
+          // Maps and difficulties
+
+          const mapsDifficultiesMonthsOptions = computed(() => {
+            const max = Math.max(...months.value.map((month) => month.newMaps.size))
+            return {
+              ...chartMonthsOptions.value,
+              chart: {
+                id: 'maps',
+                group: 'months',
+                height,
+                background,
+                events: {
+                  zoomed: function (chartContext, { xaxis, yaxis }) {
+                    console.log(chartContext, { xaxis, yaxis })
+                  },
+                },
+              },
+              title: { text: 'Maps and difficulties by month' },
+              colors: ['#000', ...difficultiesColors],
+              series: [{ name: 'Total', type: 'area', data: months.value.map((month) => month.newMaps.size) }, ...difficultiesNames.map((name) => ({ name, type: 'bar', data: months.value.map((month) => [...month.newMaps.values()].filter((m) => m.tags.has(name.toLowerCase())).length) }))],
+              yaxis: [{ forceNiceScale: true, min: 0, max }, ...difficultiesNames.map(() => ({ show: false, min: 0, max }))],
+            }
+          })
+
+          const mapsDifficultiesTotalOptions = computed(() => {
+            return {
+              ...chartTotalOptions.value,
+              chart: { id: 'maps-difficulties-total', type: 'bar', height, background },
+              title: { text: 'Total maps by difficulties' },
+              series: [{ data: difficultiesNames.map((name) => maps.value.filter((m) => m.tags.has(name.toLowerCase())).length) }],
+              xaxis: { categories: difficultiesNames },
+              colors: [
+                function ({ value, seriesIndex, w }) {
+                  return difficultiesColors[w.globals.stackedSeriesTotals.indexOf(value)]
+                },
+              ],
+            }
+          })
+
+          // Maps and physics
+
+          const mapsPhysicsMonthsOptions = computed(() => {
+            const max = Math.max(...months.value.map((month) => month.newMaps.size))
+            return {
+              ...chartMonthsOptions.value,
+              chart: { id: 'maps', group: 'months', height, background },
+              title: { text: 'Maps and physics by month' },
+              colors: ['#000', ...physicsColors],
+              series: [{ name: 'Total', type: 'area', data: months.value.map((month) => month.newMaps.size) }, ...physicsNames.map((name) => ({ name, type: 'bar', data: months.value.map((month) => [...month.newMaps.values()].filter((m) => m.tags.has(name.toLowerCase())).length) }))],
+              yaxis: [{ forceNiceScale: true, min: 0, max }, ...physicsNames.map(() => ({ show: false, min: 0, max }))],
+            }
+          })
+
+          const mapsPhysicsTotalOptions = computed(() => {
+            return {
+              ...chartTotalOptions.value,
+              chart: { id: 'maps-physics-total', type: 'bar', height, background },
+              title: { text: 'Total maps by physics' },
+              series: [{ data: physicsNames.map((name) => maps.value.filter((m) => m.tags.has(name.toLowerCase())).length) }],
+              xaxis: { categories: physicsNames },
+              colors: [
+                function ({ value, seriesIndex, w }) {
+                  return physicsColors[w.globals.stackedSeriesTotals.indexOf(value)]
+                },
+              ],
+            }
+          })
+
+          // Players and physics
+
+          const playersDifficultiesMonthsOptions = computed(() => {
+            const max = Math.max(...months.value.map((month) => month.players.size))
+            return {
+              ...chartMonthsOptions.value,
+              chart: { id: 'players', group: 'months', height, background },
+              title: { text: 'Players and difficulties by month' },
+              colors: ['#000', ...difficultiesColors],
+              series: [{ name: 'Total', type: 'area', data: months.value.map((month) => month.players.size) }, ...difficultiesNames.map((name) => ({ name, type: 'bar', data: months.value.map((month) => new Set([...month.runs.values()].filter((r) => r.map.tags.has(name.toLowerCase())).map((r) => r.playerId)).size) }))],
+              yaxis: [{ forceNiceScale: true, min: 0, max }, ...difficultiesNames.map(() => ({ show: false, min: 0, max }))],
+            }
+          })
+
+          const playersDifficultiesTotalOptions = computed(() => {
+            return {
+              ...chartTotalOptions.value,
+              chart: { id: 'players-difficulties-total', type: 'bar', height, background },
+              title: { text: 'Total players by difficulties' },
+              series: [{ data: difficultiesNames.map((name) => new Set(runs.value.filter((r) => r.map.tags.has(name.toLowerCase())).map((r) => r.playerId)).size) }],
+              xaxis: { categories: difficultiesNames },
+              colors: [
+                function ({ value, seriesIndex, w }) {
+                  return difficultiesColors[w.globals.stackedSeriesTotals.indexOf(value)]
+                },
+              ],
+            }
+          })
+
+          // Players and physics
+
+          const playersPhysicsMonthsOptions = computed(() => {
+            const max = Math.max(...months.value.map((month) => month.players.size))
+            return {
+              ...chartMonthsOptions.value,
+              chart: { id: 'players', group: 'months', height, background },
+              title: { text: 'Players and physics by month' },
+              colors: ['#000', ...physicsColors],
+              series: [{ name: 'Total', type: 'area', data: months.value.map((month) => month.players.size) }, ...physicsNames.map((name) => ({ name, type: 'bar', data: months.value.map((month) => new Set([...month.runs.values()].filter((r) => r.physicsId === name.toLowerCase()).map((r) => r.playerId)).size) }))],
+              yaxis: [{ forceNiceScale: true, min: 0, max }, ...physicsNames.map(() => ({ show: false, min: 0, max }))],
+            }
+          })
+
+          const playersPhysicsTotalOptions = computed(() => {
+            return {
+              ...chartTotalOptions.value,
+              chart: { id: 'players-physics-total', type: 'bar', height, background },
+              title: { text: 'Total players by physics' },
+              series: [{ data: physicsNames.map((name) => new Set(runs.value.filter((r) => r.physicsId === name.toLowerCase()).map((r) => r.playerId)).size) }],
+              xaxis: { categories: physicsNames },
+              colors: [
+                function ({ value, seriesIndex, w }) {
+                  return physicsColors[w.globals.stackedSeriesTotals.indexOf(value)]
+                },
+              ],
+            }
+          })
+
+          // Runs and difficulties
+
+          const runsDifficultiesMonthsOptions = computed(() => {
+            const max = Math.max(...months.value.map((month) => month.runs.size))
+            return {
+              ...chartMonthsOptions.value,
+              chart: { id: 'runs-difficulties-months', group: 'months', height, background },
+              title: { text: 'Runs and difficulties by month' },
+              colors: ['#000', ...difficultiesColors],
+              series: [{ name: 'Total', type: 'area', data: months.value.map((month) => month.runs.size) }, ...difficultiesNames.map((name) => ({ name, type: 'bar', data: months.value.map((month) => [...month.runs.values()].filter((r) => r.map.tags.has(name.toLowerCase())).length) }))],
+              yaxis: [{ forceNiceScale: true, min: 0, max }, ...difficultiesNames.map(() => ({ show: false, min: 0, max }))],
+            }
+          })
+
+          const runsDifficultiesTotalOptions = computed(() => {
+            return {
+              ...chartTotalOptions.value,
+              chart: { id: 'runs-difficulties-total', type: 'bar', height, background },
+              title: { text: 'Total runs by difficulties' },
+              series: [{ data: difficultiesNames.map((name) => runs.value.filter((r) => r.map.tags.has(name.toLowerCase())).length) }],
+              xaxis: { categories: difficultiesNames },
+              colors: [
+                function ({ value, seriesIndex, w }) {
+                  return difficultiesColors[w.globals.stackedSeriesTotals.indexOf(value)]
+                },
+              ],
+            }
+          })
+
+          // Runs and physics
+
+          const runsPhysicsMonthsOptions = computed(() => {
+            const max = Math.max(...months.value.map((month) => month.runs.size))
+            return {
+              ...chartMonthsOptions.value,
+              chart: { id: 'runs-physics-months', group: 'months', height, background },
+              title: { text: 'Runs and physics by month' },
+              colors: ['#000', ...physicsColors],
+              series: [{ name: 'Total', type: 'area', data: months.value.map((month) => month.runs.size) }, ...physicsNames.map((name) => ({ name, type: 'bar', data: months.value.map((month) => [...month.runs.values()].filter((r) => r.physicsId === name.toLowerCase()).length) }))],
+              yaxis: [{ forceNiceScale: true, min: 0, max }, ...physicsNames.map(() => ({ show: false, min: 0, max }))],
+            }
+          })
+
+          const runsPhysicsTotalOptions = computed(() => {
+            return {
+              ...chartTotalOptions.value,
+              chart: { id: 'runs-physics-total', type: 'bar', height, background },
+              title: { text: 'Total runs by physics' },
+              series: [{ data: physicsNames.map((name) => runs.value.filter((r) => r.physicsId === name.toLowerCase()).length) }],
+              xaxis: { categories: physicsNames },
+              colors: [
+                function ({ value, seriesIndex, w }) {
+                  return physicsColors[w.globals.stackedSeriesTotals.indexOf(value)]
+                },
+              ],
+            }
+          })
+
+          // Runs and sources
+
+          const runsLinksMonthsOptions = computed(() => {
+            const max = Math.max(...months.value.map((month) => month.runs.size))
+            return {
+              ...chartMonthsOptions.value,
+              chart: { id: 'runs-links-months', group: 'months', height, background },
+              title: { text: 'Runs and sources by month' },
+              colors: ['#000', ...linkColors],
+              series: [{ name: 'Total', type: 'area', data: months.value.map((month) => month.runs.size) }, ...linkNames.map((name) => ({ name, type: 'bar', data: months.value.map((month) => [...month.runs.values()].filter((r) => r.linkType === name.toLowerCase()).length) }))],
+              yaxis: [{ forceNiceScale: true, min: 0, max }, ...linkNames.map(() => ({ show: false, min: 0, max }))],
+            }
+          })
+
+          const runsLinksTotalOptions = computed(() => {
+            return {
+              ...chartTotalOptions.value,
+              chart: { id: 'runs-links-total', type: 'bar', height, background },
+              title: { text: 'Total runs by source' },
+              series: [{ data: linkNames.map((name) => runs.value.filter((i) => i.linkType === name.toLowerCase()).length) }],
+              xaxis: { categories: linkNames },
+              colors: [
+                function ({ value, seriesIndex, w }) {
+                  return linkColors[w.globals.stackedSeriesTotals.indexOf(value)]
+                },
+              ],
+            }
+          })
+
+          // Runs and records
+
+          const runsRecordsMonthsOptions = computed(() => {
+            const max = Math.max(...months.value.map((month) => month.records.size))
+            const maxRuns = Math.max(...months.value.map((month) => month.runs.size))
+            return {
+              ...chartMonthsOptions.value,
+              chart: { id: 'runs-records-months', group: 'months', height, background },
+              title: { text: 'PBs and WRs by month' },
+              colors: [...recordsColors],
+              series: [
+                { name: 'PB', type: 'bar', data: months.value.map((month) => [...month.records.values()].filter((r) => r.pb).length) },
+                { name: 'WR', type: 'bar', data: months.value.map((month) => [...month.records.values()].filter((r) => r.wr).length) },
+              ],
+              yaxis: [
+                { forceNiceScale: true, min: 0, max },
+                { show: false, min: 0, max },
+              ],
+              dataLabels: {
+                enabled: true,
+                offsetY: -10,
+              },
+            }
+          })
+
+          const runsRecordsTotalOptions = computed(() => {
+            return {
+              ...chartTotalOptions.value,
+              chart: { id: 'runs-records-total', type: 'bar', height, background },
+              title: { text: 'Total PBs and WRs' },
+              series: [{ data: recordsNames.map((name) => runs.value.filter((i) => i[name.toLowerCase()]).length) }],
+              xaxis: { categories: recordsNames },
+              colors: [
+                function ({ value, seriesIndex, w }) {
+                  return recordsColors[w.globals.stackedSeriesTotals.indexOf(value)]
+                },
+              ],
+            }
+          })
+
+          // - video links
+          // - count of wr and pb
+          // - total time of all records (time of player's runs)
+          // - total runs with icons (bug etc)
+          // - biggest player total times
+          // - sharp/flat times (end on .000 0.000 00.000)
+          // longest runs
+          // fastest runs
+
+          updateData()
+
+          // let dataInterval = setInterval(updateData, 60 * 1000)
+
+          function renderCharts() {
+            const mapsDifficultiesMonthsChart = new ApexCharts(document.querySelector('#maps-difficulties-months-chart'), mapsDifficultiesMonthsOptions.value)
+            const mapsDifficultiesTotalChart = new ApexCharts(document.querySelector('#maps-difficulties-total-chart'), mapsDifficultiesTotalOptions.value)
+            const mapsPhysicsMonthsChart = new ApexCharts(document.querySelector('#maps-physics-months-chart'), mapsPhysicsMonthsOptions.value)
+            const mapsPhysicsTotalChart = new ApexCharts(document.querySelector('#maps-physics-total-chart'), mapsPhysicsTotalOptions.value)
+            const playersDifficultiesMonthsChart = new ApexCharts(document.querySelector('#players-difficulties-months-chart'), playersDifficultiesMonthsOptions.value)
+            const playersDifficultiesTotalChart = new ApexCharts(document.querySelector('#players-difficulties-total-chart'), playersDifficultiesTotalOptions.value)
+            const playersPhysicsMonthsChart = new ApexCharts(document.querySelector('#players-physics-months-chart'), playersPhysicsMonthsOptions.value)
+            const playersPhysicsTotalChart = new ApexCharts(document.querySelector('#players-physics-total-chart'), playersPhysicsTotalOptions.value)
+            const runsDifficultiesMonthsChart = new ApexCharts(document.querySelector('#runs-difficulties-months-chart'), runsDifficultiesMonthsOptions.value)
+            const runsDifficultiesTotalChart = new ApexCharts(document.querySelector('#runs-difficulties-total-chart'), runsDifficultiesTotalOptions.value)
+            const runsPhysicsMonthsChart = new ApexCharts(document.querySelector('#runs-physics-months-chart'), runsPhysicsMonthsOptions.value)
+            const runsPhysicsTotalChart = new ApexCharts(document.querySelector('#runs-physics-total-chart'), runsPhysicsTotalOptions.value)
+            const runsLinksMonthsChart = new ApexCharts(document.querySelector('#runs-links-months-chart'), runsLinksMonthsOptions.value)
+            const runsLinksTotalChart = new ApexCharts(document.querySelector('#runs-links-total-chart'), runsLinksTotalOptions.value)
+            const runsRecordsMonthsChart = new ApexCharts(document.querySelector('#runs-records-months-chart'), runsRecordsMonthsOptions.value)
+            const runsRecordsTotalChart = new ApexCharts(document.querySelector('#runs-records-total-chart'), runsRecordsTotalOptions.value)
+            mapsDifficultiesMonthsChart.render()
+            mapsDifficultiesTotalChart.render()
+            mapsPhysicsMonthsChart.render()
+            mapsPhysicsTotalChart.render()
+            playersDifficultiesMonthsChart.render()
+            playersDifficultiesTotalChart.render()
+            playersPhysicsMonthsChart.render()
+            playersPhysicsTotalChart.render()
+            runsDifficultiesMonthsChart.render()
+            runsDifficultiesTotalChart.render()
+            runsPhysicsMonthsChart.render()
+            runsPhysicsTotalChart.render()
+            runsLinksMonthsChart.render()
+            runsLinksTotalChart.render()
+            runsRecordsMonthsChart.render()
+            runsRecordsTotalChart.render()
+          }
+
+          function updateData() {
+            fetch('https://quakelife.ru/diabotical/race/data.json')
+              .then((res) => res.json())
+              .then((newData) => {
+                console.time('⏳ creating collections')
+
+                monthsById.clear()
+                daysById.clear()
+                runsById.clear()
+                mapsById.clear()
+                playersById.clear()
+                authorsById.clear()
+                tagsById.clear()
+                physicsById.clear()
+                iconsById.clear()
+                recordsByGroups.clear()
+
+                newData.runs.sort((run1, run2) => (run2.time > run1.time ? -1 : run2.time < run1.time ? 1 : run1.datetime > run2.datetime ? 1 : -1))
+
+                for (const physicsId of physicsIds) {
+                  createPhysics(physicsId)
+                }
+                for (const tagId in tagsDataById) {
+                  createTag(tagId)
+                }
+                for (const rawPlayer of newData.players || []) {
+                  createPlayer(rawPlayer)
+                }
+                for (const rawMap of newData.maps || []) {
+                  createMap(rawMap) // => createAuthor(), createTag()
+                }
+                for (const [mapId, map] of mapsById) {
+                  recordsByGroups.set(map.id, new Map())
+                  for (let version = 1; version <= map.version; version++) {
+                    recordsByGroups.get(map.id)?.set(version, new Map())
+                    for (const physicsId of map.physicsIds) {
+                      recordsByGroups.get(map.id).get(version).set(physicsId, new Map())
+                    }
+                  }
+                  for (const [tagId, tag] of map.tags) {
+                    tag.maps.set(mapId, map)
+                  }
+                  for (const [authorId, author] of map.authors) {
+                    author.maps.set(mapId, map)
+                  }
+                }
+                for (const rawRun of newData.runs || []) {
+                  createRun(rawRun) // => createPlayer(), createDay()
+                }
+
+                console.log({ daysById, runsById, mapsById, playersById, authorsById, tagsById, physicsById, iconsById, recordsByGroups })
+
+                console.log(`📊 ${monthsById.size} months`)
+                console.log(`📊 ${daysById.size} days`)
+                console.log(`📊 ${runsById.size} submissions`)
+                console.log(`📊 ${playersById.size} players`)
+                console.log(`📊 ${mapsById.size} maps`)
+                console.log(`📊 ${authorsById.size} authors`)
+                console.log(`📊 ${tagsById.size} tags`)
+
+                console.timeEnd('⏳ creating collections')
+
+                nextTick().then(() => {
+                  renderCharts()
+                })
+              })
+          }
+
+          function createPhysics(physicsId) {
+            const newPhysics = {
+              id: physicsId,
+              records: new Map(),
+              runs: new Map(),
+              players: new Map(),
+              maps: new Map(),
+            }
+            physicsById.set(physicsId, newPhysics)
+            return newPhysics
+          }
+
+          function createMap(map) {
+            if (mapsById.has(map.id)) {
+              return mapsById.get(map.id)
+            }
+
+            const day = createDay(map.since)
+            const month = createMonth(map.since)
+
+            const physicsIds = []
+            const until = map.until || ''
+            const rules = map.rules || []
+            const dayId = map.since.substring(0, 10)
+            const monthId = map.since.substring(0, 7)
+            const image = `https://quakelife.ru/diabotical/maps/img/thumbnails/${map.id}.webp`
+
+            if (dayId > getDay('', -7)) {
+              map.tagNames.unshift('new')
+            }
+
+            if (map.until) {
+              map.tagNames.unshift('archived')
+            }
+
+            if (!map.tagNames.includes('official')) {
+              map.tagNames.unshift('community')
+            }
+
+            if (map.tagNames.includes('diabotical')) {
+              physicsIds.unshift('diabotical')
+            }
+
+            if (map.tagNames.includes('vintage')) {
+              physicsIds.unshift('vintage')
+            }
+
+            if (map.tagNames.includes('race')) {
+              physicsIds.unshift('race')
+            }
+
+            if (!map.tagNames.includes('race') && !map.tagNames.includes('vintage') && !map.tagNames.includes('diabotical')) {
+              physicsIds.unshift('race', 'vintage', 'diabotical')
+              map.tagNames.unshift('race', 'vintage', 'diabotical')
+            }
+
+            const defaultPhysics = physicsIds[0]
+
+            const tags = new Map(
+              map.tagNames.map((tagName) => {
+                const newTag = createTag(tagName)
+                return [newTag.id, newTag]
+              })
+            )
+
+            const authors = new Map(
+              map.authorNames.map((authorName) => {
+                const newAuthor = createAuthor(authorName)
+                return [newAuthor.id, newAuthor]
+              })
+            )
+
+            const newMap = {
+              ...map,
+              physicsIds,
+              rules,
+              until,
+              // computed
+              image,
+              defaultPhysics,
+              dayId,
+              monthId,
+              icons: {},
+              // links
+              tags,
+              authors,
+              time: 0,
+              newRuns: new Map(),
+              runs: new Map(),
+              records: new Map(),
+              players: new Map(),
+            }
+
+            mapsById.set(map.id, newMap)
+            day.newMaps.set(map.id, newMap)
+            month.newMaps.set(map.id, newMap)
+            return newMap
+          }
+
+          function createPlayer(player) {
+            const playerId = player.id || `${player.flag}_${player.name}`.toLowerCase()
+            if (playersById.has(playerId)) {
+              return playersById.get(playerId)
+            }
+            const newPlayer = {
+              id: playerId,
+              twitchId: 0,
+              twitchName: '',
+              twitchFollowers: 0,
+              ...player,
+              // computed
+              mine: false,
+              bestPhysics: 'race',
+              wrs: 0,
+              pbs: 0,
+              time: 0,
+              rating: 0,
+              medals: [0, 0, 0, 0],
+              maps: new Map(),
+              runs: new Map(),
+              records: new Map(),
+              players: new Map(),
+            }
+            playersById.set(playerId, newPlayer)
+            return newPlayer
+          }
+
+          function createRun(run) {
+            const id = run.mapId + '_' + run.name + '_' + run.time // replace to run.id after removing duplicates
+            const playerId = run.playerId || `${run.flag}_${run.name}`.toLowerCase()
+            const dayId = (run.datetime || new Date().toISOString()).substring(0, 10)
+            const monthId = (run.datetime || new Date().toISOString()).substring(0, 7)
+            const day = createDay(dayId)
+            const month = createMonth(monthId)
+            const player = createPlayer({ name: run.name, flag: run.flag })
+            const map = mapsById.get(run.mapId)
+            if (!run.approved /*|| map.tagNames.includes('archived')*/) {
+              return false
+            }
+            const icons = { ...(run.icons || {}) }
+            const recordsGroup = recordsByGroups.get(run.mapId).get(run.version).get(run.physicsId) || new Map()
+            const prettyTime = getPrettyTime(run.time)
+            const newRun = {
+              ...run,
+              id,
+              playerId,
+              dayId,
+              monthId,
+              icons,
+              timeDiff: 0,
+              ratingDiff: 0,
+              placement: 1,
+              placementDiff: 0,
+              wr: !recordsGroup.size,
+              pb: !recordsGroup.has(playerId),
+              prettyTime,
+              linkType: getLinkType(run.video),
+              timePrettiness: prettyTime.includes('00:00.000') ? 5 : prettyTime.includes('0:00.000') ? 4 : prettyTime.includes('00.000') ? 3 : prettyTime.includes('0.000') ? 2 : prettyTime.includes('.000') ? 1 : 0,
+              day,
+              month,
+              player,
+              map,
+              physics: physicsById.get(run.physicsId),
+            }
+            for (const icon in newRun.icons) {
+              if (!iconsById.has(icon)) {
+                iconsById.set(icon, newRun.icons[icon])
+              }
+            }
+            runsById.set(id, newRun)
+            if (newRun.pb) {
+              day.records.set(playerId, newRun)
+              month.records.set(playerId, newRun)
+              player.records.set(playerId, newRun)
+              map.records.set(playerId, newRun)
+              player.pbs += 1
+            }
+            if (newRun.wr) {
+              player.wrs += 1
+            }
+            player.time += run.time
+            map.time += run.time
+            player.runs.set(id, newRun)
+            map.runs.set(id, newRun)
+            day.runs.set(id, newRun)
+            month.runs.set(id, newRun)
+            player.maps.set(newRun.mapId, map)
+            day.maps.set(newRun.mapId, map)
+            month.maps.set(newRun.mapId, map)
+            map.players.set(playerId, player)
+            day.players.set(playerId, player)
+            month.players.set(playerId, player)
+            if (!recordsGroup.has(playerId)) {
+              recordsGroup.set(playerId, newRun)
+            }
+            return newRun
+          }
+
+          function createTag(tagName) {
+            const tagId = tagName.toLowerCase()
+            if (tagsById.has(tagId)) {
+              return tagsById.get(tagId)
+            }
+            const newTag = {
+              id: tagId,
+              icon: 'tag',
+              color: '#678',
+              group: 10,
+              custom: true,
+              auto: false,
+              ...(tagsDataById[tagId] || {}),
+              name: tagName,
+              maps: new Map(),
+              players: new Map(),
+              records: new Map(),
+              runs: new Map(),
+            }
+            tagsById.set(tagId, newTag)
+            return newTag
+          }
+
+          function createAuthor(authorName) {
+            const authorId = authorName.toLowerCase()
+            if (authorsById.has(authorId)) {
+              return authorsById.get(authorId)
+            }
+            const newAuthor = {
+              id: authorId,
+              name: authorName,
+              maps: new Map(),
+              players: new Map(),
+              records: new Map(),
+              runs: new Map(),
+            }
+            authorsById.set(authorId, newAuthor)
+            return newAuthor
+          }
+
+          function createDay(daytime) {
+            const dayId = daytime.substring(0, 10)
+            if (daysById.has(dayId)) {
+              return daysById.get(dayId)
+            }
+            const newDay = {
+              id: dayId,
+              runs: new Map(),
+              records: new Map(),
+              players: new Map(),
+              maps: new Map(),
+              newMaps: new Map(),
+            }
+            daysById.set(dayId, newDay)
+            return newDay
+          }
+
+          function createMonth(daytime) {
+            const monthId = daytime.substring(0, 7)
+            if (monthsById.has(monthId)) {
+              return monthsById.get(monthId)
+            }
+            const newMonth = {
+              id: monthId,
+              runs: new Map(),
+              records: new Map(),
+              players: new Map(),
+              maps: new Map(),
+              newMaps: new Map(),
+            }
+            monthsById.set(monthId, newMonth)
+            return newMonth
+          }
+
+          function getDay(date, diff = 0) {
+            if (!diff && date) {
+              return date.substring(0, 10)
+            }
+            // toUpperCase date for Firefox?
+            const time = date ? new Date(date).getTime() : Date.now()
+            return new Date(time + diff * 24 * 60 * 60 * 1000).toISOString().substring(0, 10)
+          }
+
+          function compareStrings(a, b) {
+            return a.localeCompare(b, 'en', { sensitivity: 'base' })
+          }
+
+          function keyBy(array, key = 'id') {
+            try {
+              return array.reduce((result, item) => {
+                result.set(item[key], item)
+                return result
+              }, new Map())
+            } catch (error) {
+              console.warn(error)
+              return {}
+            }
+          }
+
+          function getLinkType(url) {
+            const matchYoutube = url.match(/((youtube\.com\/watch\?v=([^&]+))|(youtu\.be\/([^?]+)))((&|\?)t=(\d+)(.*))?/)
+            const matchStreamable = url.match(/streamable\.com\/([^&?/]+).*/i)
+            const matchTwitchClip = url.match(/twitch\.tv\/.+\/clip\/([^&?/]+).*/i) // https://www.twitch.tv/rollipollipotamus/clip/BusySarcasticSquidYouDontSay
+            const matchTwitchClip2 = url.match(/clips\.twitch\.tv\/([^&?/]+).*/i) // https://clips.twitch.tv/AthleticKindShallotTebowing
+            const matchTwitchVideo = url.match(/twitch\.tv\/videos\/(\d+).*/i) // https://www.twitch.tv/videos/867275470
+            if (matchYoutube) {
+              return `youtube`
+            } else if (matchStreamable) {
+              return `streamable`
+            } else if (matchTwitchClip || matchTwitchClip2 || matchTwitchVideo) {
+              return `twitch`
+            }
+            return 'other'
+          }
+
+          function getPrettyTime(datetime, options = { ms: true }) {
+            const time = Math.abs(datetime)
+            const d = Math.floor(time / 86400000)
+            const htime = time - d * 86400000
+            const h = Math.floor(htime / 3600000)
+            const mtime = time - d * 86400000 - h * 3600000
+            const m = Math.floor(mtime / 60000)
+            const stime = time - d * 86400000 - h * 3600000 - m * 60000
+            const s = Math.floor(stime / 1000)
+            const ms = time - d * 86400000 - h * 3600000 - m * 60000 - s * 1000
+            return (
+              (datetime < 0 ? '-' : '') + //
+              (d ? `${d}D ` : '') +
+              (d || h ? `${h}:` : '') +
+              (d || h || m ? `${m}:`.padStart(d || h ? 3 : 2, '0') : '') +
+              `${s}`.padStart(d || h || m ? 2 : 1, '0') +
+              (options.ms ? '.' + `${ms}`.padStart(3, '0') : '')
+            )
+          }
+
+          return {
+            monthsById,
+            daysById,
+            runsById,
+            mapsById,
+            playersById,
+            authorsById,
+            tagsById,
+            physicsById,
+            iconsById,
+            playersSortedByTime: computed(() =>
+              players.value
+                .concat()
+                .sort((a, b) => b.time - a.time)
+                .slice(0, 10)
+            ),
+            playersSortedByRuns: computed(() =>
+              players.value
+                .concat()
+                .sort((a, b) => b.runs.size - a.runs.size)
+                .slice(0, 10)
+            ),
+            playersSortedByWorldRecords: computed(() =>
+              players.value
+                .concat()
+                .sort((a, b) => b.wrs - a.wrs)
+                .slice(0, 10)
+            ),
+            playersSortedByMaps: computed(() =>
+              players.value
+                .concat()
+                .sort((a, b) => b.maps.size - a.maps.size)
+                .slice(0, 10)
+            ),
+            playersSortedByFlags: computed(() =>
+              players.value
+                .reduce((items, player) => {
+                  if (!player.flag) {
+                    return items
+                  }
+                  const flag = items.find((item) => item.flag == player.flag)
+                  if (flag) {
+                    flag.count++
+                  } else {
+                    items.push({ flag: player.flag, count: 1 })
+                  }
+                  return items
+                }, [])
+                .sort((a, b) => b.count - a.count)
+                .slice(0, 10)
+            ),
+            mapsSortedByRuns: computed(() =>
+              maps.value
+                .concat()
+                .sort((a, b) => b.runs.size - a.runs.size)
+                .slice(0, 10)
+            ),
+            mapsSortedByRecords: computed(() =>
+              maps.value
+                .concat()
+                .sort((a, b) => b.records.size - a.records.size)
+                .slice(0, 10)
+            ),
+            mapsSortedByTime: computed(() =>
+              maps.value
+                .concat()
+                .sort((a, b) => b.time - a.time)
+                .slice(0, 10)
+            ),
+            mapsSortedByPlayers: computed(() =>
+              maps.value
+                .concat()
+                .sort((a, b) => b.players.size - a.players.size)
+                .slice(0, 10)
+            ),
+            tagsSortedByMaps: computed(() =>
+              tags.value
+                .filter((tag) => tag.group === 5)
+                .sort((a, b) => b.maps.size - a.maps.size)
+                .slice(0, 10)
+            ),
+            authorsSortedByMaps: computed(() =>
+              authors.value
+                .concat()
+                .sort((a, b) => b.maps.size - a.maps.size)
+                .slice(0, 10)
+            ),
+            longestRuns: computed(() =>
+              runs.value
+                .concat()
+                .sort((a, b) => b.time - a.time)
+                .slice(0, 10)
+            ),
+            shortestRuns: computed(() =>
+              runs.value
+                .concat()
+                .sort((a, b) => a.time - b.time)
+                .slice(0, 10)
+            ),
+            prettiestRuns: computed(() =>
+              runs.value
+                .filter((run) => run.timePrettiness)
+                .sort((a, b) => b.timePrettiness - a.timePrettiness || b.time - a.time)
+                .slice(0, 10)
+            ),
+            runsSortedByFlags: computed(() =>
+              runs.value
+                .reduce((items, run) => {
+                  if (!run.flag || run.flag === 'none') {
+                    return items
+                  }
+                  const flag = items.find((item) => item.flag == run.flag)
+                  if (flag) {
+                    flag.count++
+                  } else {
+                    items.push({ flag: run.flag, count: 1 })
+                  }
+                  return items
+                }, [])
+                .sort((a, b) => b.count - a.count)
+                .slice(0, 10)
+            ),
+            recordsSortedByFlags: computed(() =>
+              runs.value
+                .filter((run) => run.wr)
+                .reduce((items, run) => {
+                  if (!run.flag || run.flag === 'none') {
+                    return items
+                  }
+                  const flag = items.find((item) => item.flag == run.flag)
+                  if (flag) {
+                    flag.count++
+                  } else {
+                    items.push({ flag: run.flag, count: 1 })
+                  }
+                  return items
+                }, [])
+                .sort((a, b) => b.count - a.count)
+                .slice(0, 10)
+            ),
+            global: computed(() => {
+              return {
+                time: runs.value.reduce((total, run) => total + run.time, 0),
+                rampbugs: runs.value.reduce((total, run) => total + (run.icons['bug red'] ? 1 : 0), 0),
+                eggcups: maps.value.reduce((total, map) => total + (map.tagNames.includes('eggcup') ? 1 : 0), 0),
+              }
+            }),
+            getPrettyTime,
+          }
+        },
+      }
+
+      const app = createApp(App)
+
+      app.mount('#app')
+    </script>
+
+    <script>
+      if (location.hostname === 'quakelife.ru') {
+        ;(function (b, o, i, l, e, r) {
+          b.GoogleAnalyticsObject = l
+          b[l] ||
+            (b[l] = function () {
+              ;(b[l].q = b[l].q || []).push(arguments)
+            })
+          b[l].l = +new Date()
+          e = o.createElement(i)
+          r = o.getElementsByTagName(i)[0]
+          e.src = '//www.google-analytics.com/analytics.js'
+          r.parentNode.insertBefore(e, r)
+        })(window, document, 'script', 'ga')
+        ga('create', 'UA-17646899-1')
+        ga('send', 'pageview')
+      }
+    </script>
+    <script>
+      if (location.hostname === 'quakelife.ru') {
+        ;(function (m, e, t, r, i, k, a) {
+          m[i] =
+            m[i] ||
+            function () {
+              ;(m[i].a = m[i].a || []).push(arguments)
+            }
+          m[i].l = 1 * new Date()
+          ;(k = e.createElement(t)), (a = e.getElementsByTagName(t)[0]), (k.async = 1), (k.src = r), a.parentNode.insertBefore(k, a)
+        })(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js', 'ym')
+        ym(24177331, 'init', { clickmap: true, trackLinks: true, accurateTrackBounce: true, webvisor: false, trackHash: true })
+      }
+    </script>
+  </body>
+</html>

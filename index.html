@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Primary Meta Tags -->
+    <title>Diabotical Race Leaderboards</title>
+    <meta name="title" content="Diabotical Race Leaderboards" />
+    <meta name="description" content="A community leaderboard for Diabotical Time Trials. Maps and their authors, players and their runs, tags, physics, ratings, history of records, daily diffs." />
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://quakelife.ru/diabotical/race" />
+    <meta property="og:title" content="Diabotical Race Leaderboards" />
+    <meta property="og:description" content="A community leaderboard for Diabotical Time Trials. Maps and their authors, players and their runs, tags, physics, ratings, history of records, daily diffs." />
+    <meta property="og:image" content="https://quakelife.ru/diabotical/race/img/preview.jpg" />
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://quakelife.ru/diabotical/race" />
+    <meta property="twitter:title" content="Diabotical Race Leaderboards" />
+    <meta property="twitter:description" content="A community leaderboard for Diabotical Time Trials. Maps and their authors, players and their runs, tags, physics, ratings, history of records, daily diffs." />
+    <meta property="twitter:image" content="https://quakelife.ru/diabotical/race/img/preview.jpg" />
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/fontawesome.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/solid.min.css" />
+  </head>
+  <body class="h-screen overflow-hidden antialiased text-gray-200 whitespace-nowrap">
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+    <script>
+      if (location.hostname === 'quakelife.ru') {
+        ;(function (b, o, i, l, e, r) {
+          b.GoogleAnalyticsObject = l
+          b[l] ||
+            (b[l] = function () {
+              ;(b[l].q = b[l].q || []).push(arguments)
+            })
+          b[l].l = +new Date()
+          e = o.createElement(i)
+          r = o.getElementsByTagName(i)[0]
+          e.src = '//www.google-analytics.com/analytics.js'
+          r.parentNode.insertBefore(e, r)
+        })(window, document, 'script', 'ga')
+        ga('create', 'UA-17646899-1')
+        ga('send', 'pageview')
+      }
+    </script>
+    <script>
+      if (location.hostname === 'quakelife.ru') {
+        ;(function (m, e, t, r, i, k, a) {
+          m[i] =
+            m[i] ||
+            function () {
+              ;(m[i].a = m[i].a || []).push(arguments)
+            }
+          m[i].l = 1 * new Date()
+          ;(k = e.createElement(t)), (a = e.getElementsByTagName(t)[0]), (k.async = 1), (k.src = r), a.parentNode.insertBefore(k, a)
+        })(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js', 'ym')
+        ym(24177331, 'init', { clickmap: true, trackLinks: true, accurateTrackBounce: true, webvisor: false, trackHash: true })
+      }
+    </script>
+  </body>
+</html>
